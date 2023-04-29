@@ -3,6 +3,7 @@ package com.ephemzy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,6 +51,25 @@ public class Main {
         customer.setEmail(request.email());
         customer.setAge(request.age());
         customerRepository.save(customer);
+    }
+
+    @DeleteMapping("{customerId}")
+    public void deleteCustomer(@PathVariable("customerId") Integer id){
+        customerRepository.deleteById(id);
+    }
+
+    @PutMapping("{customerId}")
+    public ResponseEntity<?> updateCustomer(@PathVariable("customerId") Integer id, @RequestBody  NewCustomerRequest request) {
+
+        return customerRepository.findById(id)
+                .map(customer -> {
+                    if (request.name() != null && !request.name().isEmpty()) customer.setName(request.name());
+                    if (request.email() != null && !request.email().isEmpty()) customer.setEmail(request.email());
+                    if (request.age() != null) customer.setAge(request.age());
+                    customerRepository.save(customer);
+                    return ResponseEntity.ok().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }
