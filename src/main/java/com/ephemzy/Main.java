@@ -3,8 +3,7 @@ package com.ephemzy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,37 +22,34 @@ import java.util.List;
 @SpringBootApplication
 @RestController
 //In order to  make a class a controller, we need to add the @RestController annotation
+@RequestMapping("api/v1/customers")
 public class Main {
+
+    private final CustomerRepository customerRepository;
+
+    public Main(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
     // What is tomcat
     //
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
 
-//    @GetMapping("/greet")
-//    public String greets(){
-//        return "Hello World";
-//    }
-
-    @GetMapping("/greet")
-    public GreetResponse greet(){
-        var response = new GreetResponse(
-                "Hello World femi"
-                , List.of("Java", "Kotlin", "JavaScript", "Python", "PHP", "Swift")
-                , new Person("Femi", "femi@gmail.com", 23, 100_000)
-        );
-        return response;
+    @GetMapping
+    public List<Customer> getCustomers(){
+        return customerRepository.findAll();
     }
 
-    record GreetResponse(
-            String greet,
-            List<String> progLanguages,
-            Person person
-    ) { }
-    record Person(
-            String name,
-            String email,
-            int age,
-            double savings
-    ) { }
+
+    @PostMapping()
+    public void addCustomer(@RequestBody  NewCustomerRequest request) {
+        var customer = new Customer();
+        customer.setName(request.name());
+        customer.setEmail(request.email());
+        customer.setAge(request.age());
+        customerRepository.save(customer);
+    }
+
 }

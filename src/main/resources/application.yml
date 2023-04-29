@@ -1,7 +1,20 @@
 server:
   port: 8080
 
-#  To turn off web server
+
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5332/customer
+    username: amigoscode
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
   main:
+    #  To turn off web server
     web-application-type: servlet
